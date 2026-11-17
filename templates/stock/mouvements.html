@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between mb-3">
+  <h2>Historique des mouvements</h2>
+  <a href="{% url 'stock_apercu' %}" class="btn btn-outline-secondary">← Stock</a>
+</div>
+<table class="table table-striped bg-white">
+  <thead><tr><th>Date</th><th>Type</th><th>Médicament</th><th>Lot</th><th>Qté</th><th>Motif</th><th>Par</th></tr></thead>
+  <tbody>
+  {% for m in mouvements %}
+    <tr>
+      <td>{{ m.date|date:"d/m/Y H:i" }}</td>
+      <td>{{ m.get_type_display }}</td>
+      <td>{{ m.lot.medicament }}</td>
+      <td>{{ m.lot.numero_lot }}</td>
+      <td>{{ m.quantite }}</td>
+      <td>{{ m.motif }}</td>
+      <td>{{ m.utilisateur|default:"—" }}</td>
+    </tr>
+  {% empty %}
+    <tr><td colspan="7" class="text-center">Aucun mouvement.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

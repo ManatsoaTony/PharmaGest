@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between mb-3">
+  <h2>Lots</h2>
+  <a href="{% url 'stock_apercu' %}" class="btn btn-outline-secondary">← Stock</a>
+</div>
+<table class="table table-striped bg-white">
+  <thead><tr><th>Médicament</th><th>Lot</th><th>Péremption</th><th>Reçu</th><th>Dispo</th><th>Fournisseur</th><th>État</th></tr></thead>
+  <tbody>
+  {% for l in lots %}
+    <tr>
+      <td>{{ l.medicament }}</td>
+      <td>{{ l.numero_lot }}</td>
+      <td>{{ l.date_peremption|date:"d/m/Y" }}</td>
+      <td>{{ l.quantite_recue }}</td>
+      <td>{{ l.quantite }}</td>
+      <td>{{ l.fournisseur|default:"—" }}</td>
+      <td>
+        {% if l.bloque %}<span class="badge bg-secondary">Bloqué</span>
+        {% elif l.est_perime %}<span class="badge bg-danger">Périmé</span>
+        {% elif l.proche_peremption %}<span class="badge bg-warning text-dark">Bientôt périmé</span>
+        {% else %}<span class="badge bg-success">Valide</span>{% endif %}
+      </td>
+    </tr>
+  {% empty %}
+    <tr><td colspan="7" class="text-center">Aucun lot.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

@@ -10,9 +10,12 @@
 <nav class="navbar navbar-dark bg-success mb-4">
   <div class="container">
     <a class="navbar-brand" href="{% url 'medicament_liste' %}">💊 PharmaGest</a>
-    <a class="nav-link text-white" href="{% url 'categorie_liste' %}">Catégories</a>
-    <a class="nav-link text-white" href="{% url 'fournisseur_liste' %}">Fournisseurs</a>
-    <a class="btn btn-outline-light btn-sm" href="/admin/">Administration</a>
+    <div class="d-flex gap-3 align-items-center">
+      <a class="nav-link text-white" href="{% url 'categorie_liste' %}">Catégories</a>
+      <a class="nav-link text-white" href="{% url 'fournisseur_liste' %}">Fournisseurs</a>
+      <a class="nav-link text-white" href="{% url 'stock_apercu' %}">Stock</a>
+      <a class="btn btn-outline-light btn-sm" href="/admin/">Administration</a>
+    </div>
   </div>
 </nav>
 <div class="container">

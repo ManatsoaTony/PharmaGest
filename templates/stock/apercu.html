@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Stock{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between mb-3">
+  <h2>Stock</h2>
+  <div class="d-flex gap-2">
+    <a href="{% url 'stock_lots' %}" class="btn btn-outline-secondary">Lots</a>
+    <a href="{% url 'stock_mouvements' %}" class="btn btn-outline-secondary">Mouvements</a>
+    <a href="{% url 'stock_reception' %}" class="btn btn-success">+ Réception</a>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-3"><div class="card card-body text-center border-danger">
+    <div class="fs-2 text-danger">{{ ruptures|length }}</div>Ruptures</div></div>
+  <div class="col-md-3"><div class="card card-body text-center border-warning">
+    <div class="fs-2 text-warning">{{ faibles|length }}</div>Stocks faibles</div></div>
+  <div class="col-md-3"><div class="card card-body text-center border-warning">
+    <div class="fs-2 text-warning">{{ proches|length }}</div>Péremption &lt; 30 j</div></div>
+  <div class="col-md-3"><div class="card card-body text-center border-danger">
+    <div class="fs-2 text-danger">{{ perimes|length }}</div>Lots périmés</div></div>
+</div>
+
+{% if perimes %}
+<div class="alert alert-danger"><b>Lots périmés (exclus de la vente) :</b>
+  {% for l in perimes %}{{ l.medicament }} (lot {{ l.numero_lot }}, {{ l.quantite }}){% if not forloop.last %} ; {% endif %}{% endfor %}
+</div>
+{% endif %}
+{% if proches %}
+<div class="alert alert-warning"><b>Péremption proche :</b>
+  {% for l in proches %}{{ l.medicament }} (lot {{ l.numero_lot }}, {{ l.date_peremption|date:"d/m/Y" }}){% if not forloop.last %} ; {% endif %}{% endfor %}
+</div>
+{% endif %}
+
+<table class="table table-striped bg-white align-middle">
+  <thead><tr><th>Médicament</th><th>Stock disponible</th><th>Seuil</th><th>État</th></tr></thead>
+  <tbody>
+  {% for m in medicaments %}
+    <tr>
+      <td>{{ m }}</td>
+      <td>{{ m.stock }}</td>
+      <td>{{ m.seuil_alerte }}</td>
+      <td>
+        {% if m.stock == 0 %}<span class="badge bg-danger">Rupture</span>
+        {% elif m.stock <= m.seuil_alerte %}<span class="badge bg-warning text-dark">Stock faible</span>
+        {% else %}<span class="badge bg-success">OK</span>{% endif %}
+      </td>
+    </tr>
+  {% empty %}
+    <tr><td colspan="4" class="text-center">Aucun médicament actif.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
