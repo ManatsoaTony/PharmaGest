@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Fournisseurs{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between mb-3">
+  <h2>Fournisseurs</h2>
+  <a href="{% url 'fournisseur_ajouter' %}" class="btn btn-success">+ Ajouter</a>
+</div>
+
+<form method="get" class="row g-2 mb-3">
+  <div class="col-md-9">
+    <input type="text" name="q" value="{{ q }}" class="form-control" placeholder="Nom ou téléphone">
+  </div>
+  <div class="col-md-3"><button class="btn btn-outline-success w-100">Rechercher</button></div>
+</form>
+
+<table class="table table-striped bg-white align-middle">
+  <thead><tr><th>Nom</th><th>Téléphone</th><th>Email</th><th>Contact</th><th>Statut</th><th>Actions</th></tr></thead>
+  <tbody>
+  {% for f in fournisseurs %}
+    <tr>
+      <td>{{ f.nom }}</td>
+      <td>{{ f.telephone|default:"—" }}</td>
+      <td>{{ f.email|default:"—" }}</td>
+      <td>{{ f.contact_principal|default:"—" }}</td>
+      <td>{% if f.actif %}<span class="badge bg-success">Actif</span>{% else %}<span class="badge bg-secondary">Inactif</span>{% endif %}</td>
+      <td class="d-flex gap-1">
+        <a href="{% url 'fournisseur_modifier' f.pk %}" class="btn btn-sm btn-primary">Modifier</a>
+        <form method="post" action="{% url 'fournisseur_basculer' f.pk %}" onsubmit="return confirm('Confirmer ?');">
+          {% csrf_token %}
+          <button class="btn btn-sm btn-warning">{% if f.actif %}Désactiver{% else %}Réactiver{% endif %}</button>
+        </form>
+      </td>
+    </tr>
+  {% empty %}
+    <tr><td colspan="6" class="text-center">Aucun fournisseur enregistré.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+{% if is_paginated %}
+<nav>
+  {% if page_obj.has_previous %}<a class="btn btn-sm btn-outline-secondary" href="?page={{ page_obj.previous_page_number }}&q={{ q }}">« Précédent</a>{% endif %}
+  Page {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+  {% if page_obj.has_next %}<a class="btn btn-sm btn-outline-secondary" href="?page={{ page_obj.next_page_number }}&q={{ q }}">Suivant »</a>{% endif %}
+</nav>
+{% endif %}
+{% endblock %}
