@@ -8,4 +8,5 @@ urlpatterns = [
     path("valider/", views.valider, name="vente_valider"),
     path("historique/", views.liste_ventes, name="vente_liste"),
     path("<int:pk>/", views.vente_detail, name="vente_detail"),
+    path("<int:pk>/pdf/", views.recu_pdf, name="vente_pdf"),
 ]

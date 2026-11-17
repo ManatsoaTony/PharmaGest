@@ -8,6 +8,10 @@ from django.db.models.functions import Coalesce
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 
+from django.http import HttpResponse
+from django.utils import timezone
+from reportlab.lib.pagesizes import A5
+from reportlab.pdfgen import canvas
 from medicaments.models import Medicament
 from stock.models import LotStock, MouvementStock
 from .models import LigneVente, Vente
@@ -140,3 +144,63 @@ def vente_detail(request, pk):
         Vente.objects.prefetch_related("lignes__medicament", "lignes__lot"), pk=pk
     )
     return render(request, "ventes/detail.html", {"vente": vente})
+
+def recu_pdf(request, pk):
+    vente = get_object_or_404(
+        Vente.objects.prefetch_related("lignes__medicament", "lignes__lot"), pk=pk
+    )
+    response = HttpResponse(content_type="application/pdf")
+    response["Content-Disposition"] = f'inline; filename="recu-{vente.numero}.pdf"'
+
+    p = canvas.Canvas(response, pagesize=A5)
+    largeur, hauteur = A5
+    y = hauteur - 40
+
+    p.setFont("Helvetica-Bold", 16)
+    p.drawString(40, y, "PharmaGest - Reçu de vente")
+    y -= 22
+    p.setFont("Helvetica", 10)
+    p.drawString(40, y, f"N° {vente.numero}")
+    y -= 14
+    p.drawString(40, y, timezone.localtime(vente.date).strftime("Date : %d/%m/%Y %H:%M"))
+    y -= 14
+    p.drawString(40, y, f"Paiement : {vente.get_mode_paiement_display()}")
+    y -= 14
+    p.drawString(40, y, f"Caissier : {vente.utilisateur or '-'}")
+    y -= 24
+
+    p.setFont("Helvetica-Bold", 9)
+    p.drawString(40, y, "Médicament")
+    p.drawString(200, y, "Lot")
+    p.drawRightString(300, y, "Qté")
+    p.drawRightString(350, y, "P.U.")
+    p.drawRightString(largeur - 40, y, "Total")
+    y -= 4
+    p.line(40, y, largeur - 40, y)
+    y -= 14
+
+    p.setFont("Helvetica", 9)
+    for l in vente.lignes.all():
+        if y < 70:
+            p.showPage()
+            p.setFont("Helvetica", 9)
+            y = hauteur - 40
+        p.drawString(40, y, str(l.medicament)[:28])
+        p.drawString(200, y, l.lot.numero_lot[:12])
+        p.drawRightString(300, y, str(l.quantite))
+        p.drawRightString(350, y, f"{l.prix_unitaire:.0f}")
+        p.drawRightString(largeur - 40, y, f"{l.sous_total:.0f}")
+        y -= 14
+
+    y -= 6
+    p.line(40, y, largeur - 40, y)
+    y -= 20
+    p.setFont("Helvetica-Bold", 12)
+    p.drawRightString(largeur - 40, y, f"TOTAL : {vente.total:.0f} Ar")
+    y -= 30
+    p.setFont("Helvetica-Oblique", 8)
+    p.drawString(40, y, "Merci de votre visite.")
+
+    p.showPage()
+    p.save()
+    return response
