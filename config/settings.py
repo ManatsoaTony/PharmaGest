@@ -23,11 +23,14 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     # Apps PharmaGest
+    "utilisateurs",
     "medicaments",
     "fournisseurs",
+    "clients",
+    "achats",
     "stock",
     "ventes",
-]
+    "rapports",
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
