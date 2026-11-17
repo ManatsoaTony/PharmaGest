@@ -5,7 +5,7 @@ from django.urls import reverse_lazy
 from django.views.decorators.http import require_POST
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
-rom .forms import CategorieForm, MedicamentForm
+from .forms import CategorieForm, MedicamentForm
 from .models import Categorie, Medicament
 
 
