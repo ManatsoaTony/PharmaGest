@@ -14,13 +14,14 @@
       <a class="nav-link text-white" href="{% url 'categorie_liste' %}">Catégories</a>
       <a class="nav-link text-white" href="{% url 'fournisseur_liste' %}">Fournisseurs</a>
       <a class="nav-link text-white" href="{% url 'stock_apercu' %}">Stock</a>
+      <a class="nav-link text-white" href="{% url 'caisse' %}">Caisse</a>
       <a class="btn btn-outline-light btn-sm" href="/admin/">Administration</a>
     </div>
   </div>
 </nav>
 <div class="container">
   {% for message in messages %}
-    <div class="alert alert-success">{{ message }}</div>
+    <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}success{% endif %}">{{ message }}</div>
   {% endfor %}
   {% block content %}{% endblock %}
 </div>

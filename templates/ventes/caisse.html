@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}Caisse{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between mb-3">
+  <h2>Caisse</h2>
+  <a href="{% url 'vente_liste' %}" class="btn btn-outline-secondary">Historique des ventes</a>
+</div>
+
+<div class="row g-4">
+  <div class="col-md-5">
+    <form method="post" action="{% url 'panier_ajouter' %}" class="card card-body">
+      {% csrf_token %}
+      <label class="form-label">Médicament</label>
+      <select name="medicament" class="form-select mb-3" required>
+        {% for m in medicaments %}
+          <option value="{{ m.pk }}">{{ m }} — {{ m.prix_vente }} Ar (stock : {{ m.stock }})</option>
+        {% empty %}
+          <option value="">Aucun médicament en stock</option>
+        {% endfor %}
+      </select>
+      <label class="form-label">Quantité</label>
+      <input type="number" name="quantite" min="1" value="1" class="form-control mb-3" required>
+      <button class="btn btn-success">Ajouter au panier</button>
+    </form>
+  </div>
+
+  <div class="col-md-7">
+    <div class="card card-body">
+      <h5>Panier</h5>
+      <table class="table align-middle">
+        <thead><tr><th>Médicament</th><th>Qté</th><th>Sous-total</th><th></th></tr></thead>
+        <tbody>
+        {% for l in lignes %}
+          <tr>
+            <td>{{ l.med }}</td>
+            <td>{{ l.qte }}</td>
+            <td>{{ l.sous_total }} Ar</td>
+            <td>
+              <form method="post" action="{% url 'panier_retirer' l.med.pk %}">
+                {% csrf_token %}<button class="btn btn-sm btn-outline-danger">Retirer</button>
+              </form>
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="4" class="text-center">Panier vide.</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      <h4 class="text-end">Total : {{ total }} Ar</h4>
+
+      {% if lignes %}
+      <form method="post" action="{% url 'vente_valider' %}" onsubmit="return confirm('Valider la vente ?');">
+        {% csrf_token %}
+        <select name="mode_paiement" class="form-select mb-3">
+          {% for code, label in modes %}<option value="{{ code }}">{{ label }}</option>{% endfor %}
+        </select>
+        <button class="btn btn-primary w-100">Valider la vente</button>
+      </form>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

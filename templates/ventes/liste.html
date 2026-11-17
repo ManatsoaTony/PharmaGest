@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between mb-3">
+  <h2>Historique des ventes</h2>
+  <a href="{% url 'caisse' %}" class="btn btn-success">+ Nouvelle vente</a>
+</div>
+<table class="table table-striped bg-white">
+  <thead><tr><th>N°</th><th>Date</th><th>Total</th><th>Paiement</th><th>Caissier</th><th></th></tr></thead>
+  <tbody>
+  {% for v in ventes %}
+    <tr>
+      <td>{{ v.numero }}</td>
+      <td>{{ v.date|date:"d/m/Y H:i" }}</td>
+      <td>{{ v.total }} Ar</td>
+      <td>{{ v.get_mode_paiement_display }}</td>
+      <td>{{ v.utilisateur|default:"—" }}</td>
+      <td><a href="{% url 'vente_detail' v.pk %}" class="btn btn-sm btn-primary">Reçu</a></td>
+    </tr>
+  {% empty %}
+    <tr><td colspan="6" class="text-center">Aucune vente.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

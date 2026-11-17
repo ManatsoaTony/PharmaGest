@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card card-body">
+  <h2>Reçu {{ vente.numero }}</h2>
+  <p>{{ vente.date|date:"d/m/Y H:i" }} — {{ vente.get_mode_paiement_display }} — Caissier : {{ vente.utilisateur|default:"—" }}</p>
+  <table class="table">
+    <thead><tr><th>Médicament</th><th>Lot</th><th>Qté</th><th>Prix unit.</th><th>Sous-total</th></tr></thead>
+    <tbody>
+    {% for l in vente.lignes.all %}
+      <tr>
+        <td>{{ l.medicament }}</td><td>{{ l.lot.numero_lot }}</td><td>{{ l.quantite }}</td>
+        <td>{{ l.prix_unitaire }} Ar</td><td>{{ l.sous_total }} Ar</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  <h4 class="text-end">Total : {{ vente.total }} Ar</h4>
+  <div class="d-flex gap-2">
+    <a href="{% url 'caisse' %}" class="btn btn-success">Nouvelle vente</a>
+    <button onclick="window.print()" class="btn btn-outline-secondary">Imprimer</button>
+  </div>
+</div>
+{% endblock %}
