@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Médicaments{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between mb-3">
+  <h2>Médicaments</h2>
+  <a href="{% url 'medicament_ajouter' %}" class="btn btn-success">+ Ajouter</a>
+</div>
+
+<form method="get" class="row g-2 mb-3">
+  <div class="col-md-5">
+    <input type="text" name="q" value="{{ q }}" class="form-control" placeholder="Nom ou code-barres">
+  </div>
+  <div class="col-md-4">
+    <select name="categorie" class="form-select">
+      <option value="">Toutes les catégories</option>
+      {% for c in categories %}
+        <option value="{{ c.pk }}" {% if cat == c.pk|stringformat:"s" %}selected{% endif %}>{{ c.nom }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-md-3"><button class="btn btn-outline-success w-100">Rechercher</button></div>
+</form>
+
+<table class="table table-striped bg-white align-middle">
+  <thead><tr><th>Photo</th><th>Nom</th><th>Catégorie</th><th>Prix vente</th><th>Statut</th><th>Actions</th></tr></thead>
+  <tbody>
+  {% for m in medicaments %}
+    <tr>
+      <td>{% if m.photo %}<img src="{{ m.photo.url }}" width="50" class="rounded">{% else %}—{% endif %}</td>
+      <td><a href="{% url 'medicament_detail' m.pk %}">{{ m }}</a></td>
+      <td>{{ m.categorie }}</td>
+      <td>{{ m.prix_vente }} Ar</td>
+      <td>{% if m.actif %}<span class="badge bg-success">Actif</span>{% else %}<span class="badge bg-secondary">Archivé</span>{% endif %}</td>
+      <td class="d-flex gap-1">
+        <a href="{% url 'medicament_modifier' m.pk %}" class="btn btn-sm btn-primary">Modifier</a>
+        <form method="post" action="{% url 'medicament_archiver' m.pk %}"
+              onsubmit="return confirm('Confirmer ?');">
+          {% csrf_token %}
+          <button class="btn btn-sm btn-warning">{% if m.actif %}Archiver{% else %}Réactiver{% endif %}</button>
+        </form>
+      </td>
+    </tr>
+  {% empty %}
+    <tr><td colspan="6" class="text-center">Aucun médicament enregistré.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+{% if is_paginated %}
+<nav>
+  {% if page_obj.has_previous %}<a class="btn btn-sm btn-outline-secondary" href="?page={{ page_obj.previous_page_number }}&q={{ q }}&categorie={{ cat }}">« Précédent</a>{% endif %}
+  Page {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+  {% if page_obj.has_next %}<a class="btn btn-sm btn-outline-secondary" href="?page={{ page_obj.next_page_number }}&q={{ q }}&categorie={{ cat }}">Suivant »</a>{% endif %}
+</nav>
+{% endif %}
+{% endblock %}

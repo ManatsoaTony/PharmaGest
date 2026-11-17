@@ -5,12 +5,11 @@ URL configuration for config project (PharmaGest).
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path
+from django.urls import include, path
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    # Les urls des apps seront ajoutées ici au fur et à mesure :
-    # path("medicaments/", include("medicaments.urls")),
+    path("", include("medicaments.urls")),
 ]
 
 # Servir les photos uploadées en développement uniquement

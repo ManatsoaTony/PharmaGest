@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card card-body">
+  <h2>{{ object }}</h2>
+  {% if object.photo %}<img src="{{ object.photo.url }}" width="200" class="mb-3">{% endif %}
+  <p><b>Catégorie :</b> {{ object.categorie }}</p>
+  <p><b>Forme :</b> {{ object.get_forme_display }} — <b>Laboratoire :</b> {{ object.laboratoire }}</p>
+  <p><b>Code-barres :</b> {{ object.code_barres|default:"—" }}</p>
+  <p><b>Prix d'achat :</b> {{ object.prix_achat }} Ar — <b>Prix de vente :</b> {{ object.prix_vente }} Ar</p>
+  <p><b>Seuil d'alerte :</b> {{ object.seuil_alerte }}</p>
+  <a href="{% url 'medicament_liste' %}">← Retour</a>
+</div>
+{% endblock %}
