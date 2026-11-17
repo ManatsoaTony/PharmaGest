@@ -10,12 +10,21 @@
 <nav class="navbar navbar-dark bg-success mb-4">
   <div class="container">
     <a class="navbar-brand" href="{% url 'medicament_liste' %}">💊 PharmaGest</a>
-    <div class="d-flex gap-3 align-items-center">
+    <div class="d-flex gap-3 align-items-center flex-wrap">
       <a class="nav-link text-white" href="{% url 'categorie_liste' %}">Catégories</a>
       <a class="nav-link text-white" href="{% url 'fournisseur_liste' %}">Fournisseurs</a>
       <a class="nav-link text-white" href="{% url 'stock_apercu' %}">Stock</a>
       <a class="nav-link text-white" href="{% url 'caisse' %}">Caisse</a>
-      <a class="btn btn-outline-light btn-sm" href="/admin/">Administration</a>
+      {% if user.is_staff %}
+        <a class="btn btn-outline-light btn-sm" href="/admin/">Administration</a>
+      {% endif %}
+      {% if user.is_authenticated %}
+        <span class="text-white small">👤 {{ user.username }}</span>
+        <form method="post" action="{% url 'logout' %}" class="m-0">
+          {% csrf_token %}
+          <button class="btn btn-light btn-sm">Déconnexion</button>
+        </form>
+      {% endif %}
     </div>
   </div>
 </nav>
