@@ -11,6 +11,8 @@ from medicaments.models import Medicament
 from stock.models import LotStock, MouvementStock
 from utilisateurs.roles import GESTIONNAIRE, PHARMACIEN, roles_requis
 
+from rapports.audit import journaliser
+
 from .models import CommandeAchat, LigneAchat, ReceptionAchat
 
 ROLES = (GESTIONNAIRE, PHARMACIEN)
@@ -35,6 +37,7 @@ def creer(request):
     if request.method == "POST":
         f = get_object_or_404(Fournisseur, pk=request.POST.get("fournisseur"), actif=True)
         c = CommandeAchat.objects.create(fournisseur=f, utilisateur=request.user)
+        journaliser(request.user, "Commande créée", c.numero, f"Fournisseur : {f.nom}")
         messages.success(request, f"Commande {c.numero} créée en brouillon.")
         return redirect("achat_detail", pk=c.pk)
     return render(request, "achats/creer.html", {"fournisseurs": fournisseurs})
@@ -94,6 +97,7 @@ def valider(request, pk):
     else:
         c.statut = "commandee"
         c.save(update_fields=["statut"])
+        journaliser(request.user, "Commande validée", c.numero)
         messages.success(request, f"Commande {c.numero} validée. Le stock n'est pas modifié avant la réception.")
     return redirect("achat_detail", pk=pk)
 
@@ -105,6 +109,7 @@ def annuler(request, pk):
     if c.statut in ("brouillon", "commandee"):
         c.statut = "annulee"
         c.save(update_fields=["statut"])
+        journaliser(request.user, "Commande annulée", c.numero)
         messages.success(request, "Commande annulée.")
     else:
         messages.error(request, "Une commande déjà réceptionnée ne peut pas être annulée.")
@@ -164,6 +169,8 @@ def recevoir(request, pk):
                 ligne.quantite_recue += qte
                 ligne.save(update_fields=["quantite_recue"])
                 c.maj_statut()
+                journaliser(request.user, "Réception d'achat", c.numero,
+                            f"{qte} x {ligne.medicament}, lot {numero_lot}")
             messages.success(request, f"{qte} unité(s) réceptionnée(s) (lot {numero_lot}).")
             return redirect("achat_detail", pk=c.pk)
 

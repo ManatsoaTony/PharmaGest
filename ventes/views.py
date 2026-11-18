@@ -14,6 +14,7 @@ from django.http import HttpResponse
 from django.utils import timezone
 from reportlab.lib.pagesizes import A5
 from reportlab.pdfgen import canvas
+from rapports.audit import journaliser
 from clients.models import Client
 from medicaments.models import Medicament
 from stock.models import LotStock, MouvementStock
@@ -134,6 +135,7 @@ def valider(request):
                     raise StockInsuffisant(f"Stock insuffisant pour {med}.")
             vente.total = total
             vente.save(update_fields=["total"])
+            journaliser(user, "Vente validée", vente.numero, f"{total:.0f} Ar")
     except StockInsuffisant as e:
         messages.error(request, str(e))
         return redirect("caisse")
@@ -252,6 +254,8 @@ def retour(request, pk):
                         motif=f"Retour vente {ligne.vente.numero} : {motif}",
                         utilisateur=user,
                     )
+                journaliser(user, "Retour de vente", ligne.vente.numero,
+                            f"{qte} x {ligne.medicament} ({'remis en stock' if remise else 'non remis en stock'}) : {motif}")
             messages.success(request, "Retour enregistré.")
             return redirect("vente_detail", pk=ligne.vente_id)
 

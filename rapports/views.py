@@ -15,7 +15,9 @@ from utilisateurs.roles import GESTIONNAIRE, PHARMACIEN, roles_requis
 
 from medicaments.models import Medicament
 from stock.models import LotStock
+from achats.models import CommandeAchat
 from ventes.models import LigneVente, Vente
+from .models import JournalAudit
 
 
 def dashboard(request):
@@ -142,3 +144,19 @@ def rapport_ventes(request):
               for v in ventes]
     return _pdf("Rapport des ventes", ["N°", "Date", "Paiement", "Caissier", "Total"],
                 lignes, "rapport-ventes.pdf", [40, 120, 240, 340, 460])
+
+
+@roles_requis(GESTIONNAIRE, PHARMACIEN)
+def rapport_achats(request):
+    commandes = CommandeAchat.objects.select_related("fournisseur").order_by("-date_creation")[:300]
+    lignes = [(c.numero, timezone.localtime(c.date_creation).strftime("%d/%m/%Y"),
+               c.fournisseur.nom, c.get_statut_display(), f"{c.total:.0f} Ar")
+              for c in commandes]
+    return _pdf("Rapport des achats", ["N°", "Date", "Fournisseur", "Statut", "Total"],
+                lignes, "rapport-achats.pdf", [40, 110, 190, 340, 480])
+
+
+@roles_requis(PHARMACIEN)
+def journal(request):
+    entrees = JournalAudit.objects.select_related("utilisateur")[:200]
+    return render(request, "rapports/journal.html", {"entrees": entrees})

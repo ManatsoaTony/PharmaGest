@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Inventaire physique{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between mb-3">
+  <h2>Inventaire physique</h2>
+  <a href="{% url 'stock_apercu' %}" class="btn btn-outline-secondary">← Stock</a>
+</div>
+<p class="text-muted">Saisissez la quantité réellement comptée. Laissez vide un lot non compté. Chaque écart crée une correction tracée.</p>
+<form method="post">
+  {% csrf_token %}
+  <table class="table table-striped bg-white align-middle">
+    <thead><tr><th>Médicament</th><th>Lot</th><th>Péremption</th><th>Théorique</th><th style="width:140px">Compté</th></tr></thead>
+    <tbody>
+    {% for l in lots %}
+      <tr>
+        <td>{{ l.medicament }}</td>
+        <td>{{ l.numero_lot }}</td>
+        <td>{{ l.date_peremption|date:"d/m/Y" }}{% if l.est_perime %} <span class="badge bg-danger">périmé</span>{% endif %}</td>
+        <td>{{ l.quantite }}</td>
+        <td><input type="number" min="0" name="compte_{{ l.pk }}" class="form-control form-control-sm"></td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="5" class="text-center">Aucun lot en stock.</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  <button class="btn btn-success" onclick="return confirm('Enregistrer cet inventaire et corriger les écarts ?')">Enregistrer l'inventaire</button>
+</form>
+{% endblock %}
