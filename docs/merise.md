@@ -27,43 +27,45 @@ Ce document complète le diagramme de classes UML (`docs/classes.png`). Il prés
 
 ## 2. MCD (modèle conceptuel de données)
 
-Les cardinalités se lisent « côté entité : minimum, maximum ».
+![MCD](mcd.png)
 
-```mermaid
-erDiagram
-    CATEGORIE ||--o{ MEDICAMENT : "classe"
-    MEDICAMENT ||--o{ LOT_STOCK : "se présente en"
-    FOURNISSEUR |o--o{ LOT_STOCK : "fournit"
-    FOURNISSEUR ||--o{ COMMANDE_ACHAT : "reçoit"
-    COMMANDE_ACHAT ||--|{ LIGNE_ACHAT : "contient"
-    MEDICAMENT ||--o{ LIGNE_ACHAT : "est commandé dans"
-    LIGNE_ACHAT ||--o{ RECEPTION_ACHAT : "est réceptionnée par"
-    LOT_STOCK ||--o{ RECEPTION_ACHAT : "est alimenté par"
-    LOT_STOCK ||--o{ MOUVEMENT_STOCK : "est tracé par"
-    CLIENT |o--o{ VENTE : "effectue"
-    VENTE ||--|{ LIGNE_VENTE : "contient"
-    MEDICAMENT ||--o{ LIGNE_VENTE : "est vendu dans"
-    LOT_STOCK ||--o{ LIGNE_VENTE : "est délivré dans"
-    LIGNE_VENTE ||--o{ RETOUR_VENTE : "peut être retournée par"
-    UTILISATEUR |o--o{ COMMANDE_ACHAT : "crée"
-    UTILISATEUR |o--o{ VENTE : "enregistre"
-    UTILISATEUR |o--o{ MOUVEMENT_STOCK : "réalise"
-    UTILISATEUR |o--o{ RECEPTION_ACHAT : "réalise"
-    UTILISATEUR |o--o{ RETOUR_VENTE : "traite"
-    UTILISATEUR |o--o{ JOURNAL_AUDIT : "est auteur de"
-```
+Notation Merise : les rectangles sont les entités (identifiant souligné), les ellipses sont les associations, et chaque lien porte la cardinalité **(min,max)** côté entité. Exemple : « MEDICAMENT (1,1) — CLASSER — CATEGORIE (0,N) » signifie qu'un médicament appartient à exactement une catégorie, et qu'une catégorie regroupe de 0 à N médicaments.
 
-Lecture des principales cardinalités :
+### Liste des associations et cardinalités
 
-| Association | Côté gauche | Côté droit |
-|---|---|---|
-| CATEGORIE — MEDICAMENT | un médicament a 1,1 catégorie | une catégorie regroupe 0,N médicaments |
-| MEDICAMENT — LOT_STOCK | un lot concerne 1,1 médicament | un médicament a 0,N lots |
-| FOURNISSEUR — COMMANDE_ACHAT | une commande a 1,1 fournisseur | un fournisseur a 0,N commandes |
-| COMMANDE_ACHAT — LIGNE_ACHAT | une ligne appartient à 1,1 commande | une commande a 1,N lignes |
-| CLIENT — VENTE | une vente a 0,1 client (vente comptoir possible) | un client a 0,N ventes |
-| VENTE — LIGNE_VENTE | une ligne appartient à 1,1 vente | une vente a 1,N lignes |
-| LIGNE_VENTE — RETOUR_VENTE | un retour concerne 1,1 ligne | une ligne a 0,N retours |
+| N° | Association | Entité 1 (min,max) | Entité 2 (min,max) |
+|---|---|---|---|
+| 1 | CLASSER | MEDICAMENT (1,1) | CATEGORIE (0,N) |
+| 2 | SE_PRESENTER_EN | LOT_STOCK (1,1) | MEDICAMENT (0,N) |
+| 3 | LIVRER | LOT_STOCK (0,1) | FOURNISSEUR (0,N) |
+| 4 | PASSER | COMMANDE_ACHAT (1,1) | FOURNISSEUR (0,N) |
+| 5 | COMPOSER_COMMANDE | LIGNE_ACHAT (1,1) | COMMANDE_ACHAT (1,N) |
+| 6 | PORTER_SUR_ACHAT | LIGNE_ACHAT (1,1) | MEDICAMENT (0,N) |
+| 7 | RECEPTIONNER | RECEPTION_ACHAT (1,1) | LIGNE_ACHAT (0,N) |
+| 8 | ALIMENTER | RECEPTION_ACHAT (1,1) | LOT_STOCK (0,N) |
+| 9 | TRACER | MOUVEMENT_STOCK (1,1) | LOT_STOCK (0,N) |
+| 10 | ACHETER | VENTE (0,1) | CLIENT (0,N) |
+| 11 | COMPOSER_VENTE | LIGNE_VENTE (1,1) | VENTE (1,N) |
+| 12 | PORTER_SUR_VENTE | LIGNE_VENTE (1,1) | MEDICAMENT (0,N) |
+| 13 | DELIVRER | LIGNE_VENTE (1,1) | LOT_STOCK (0,N) |
+| 14 | RETOURNER | RETOUR_VENTE (1,1) | LIGNE_VENTE (0,N) |
+| 15 | CREER | COMMANDE_ACHAT (0,1) | UTILISATEUR (0,N) |
+| 16 | ENREGISTRER | VENTE (0,1) | UTILISATEUR (0,N) |
+| 17 | EFFECTUER_MOUVEMENT | MOUVEMENT_STOCK (0,1) | UTILISATEUR (0,N) |
+| 18 | EFFECTUER_RECEPTION | RECEPTION_ACHAT (0,1) | UTILISATEUR (0,N) |
+| 19 | TRAITER_RETOUR | RETOUR_VENTE (0,1) | UTILISATEUR (0,N) |
+| 20 | SIGNER | JOURNAL_AUDIT (0,1) | UTILISATEUR (0,N) |
+
+### Remarques de modélisation
+- `LIGNE_ACHAT`, `LIGNE_VENTE` et `RECEPTION_ACHAT` sont des entités dépendantes de leur en-tête (identifiant relatif), car elles portent des attributs propres (quantité, prix figé) et sont elles-mêmes reliées à d'autres entités (`RETOUR_VENTE` se rattache à `LIGNE_VENTE`).
+- `UTILISATEUR` correspond à la table d'authentification de Django (comptes, mots de passe hachés, groupes qui représentent les rôles).
+- Le client est facultatif sur une vente (0,1) pour permettre la vente comptoir.
+- Le fournisseur d'un lot est facultatif (0,1), car un lot peut être réceptionné directement sans commande.
+
+### Reproduire le MCD dans Looping
+1. Créer les 14 entités du dictionnaire (section 1) avec leurs attributs, `id` comme identifiant.
+2. Créer chaque association du tableau ci-dessus et saisir les deux cardinalités.
+3. Exporter le MLD : Looping applique les règles de transformation et produit les clés étrangères, qui doivent correspondre à la section 3.
 
 ## 3. MLD (modèle logique de données)
 

@@ -50,7 +50,8 @@ Le compte administrateur est celui créé avec `createsuperuser`.
 ## Documentation
 - `docs/guide_utilisation.md` : guide d'utilisation
 - `docs/merise.md` : dossier de conception (dictionnaire, MCD, MLD, règles de gestion)
-- `docs/mld.png` : schéma relationnel
+- `docs/mcd.png` : modèle conceptuel de données (Merise)
+- `docs/mld.png` : schéma relationnel (MLD)
 - `docs/classes.png` : diagramme de classes UML généré depuis les modèles
 
 ## Sauvegarde et restauration
