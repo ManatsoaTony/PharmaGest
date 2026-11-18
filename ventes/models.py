@@ -40,3 +40,23 @@ class LigneVente(models.Model):
     @property
     def sous_total(self):
         return self.quantite * self.prix_unitaire
+
+class RetourVente(models.Model):
+    ligne = models.ForeignKey(
+        LigneVente, on_delete=models.PROTECT, related_name="retours"
+    )
+    quantite = models.PositiveIntegerField()
+    motif = models.CharField(max_length=200)
+    remis_en_stock = models.BooleanField(
+        default=True, help_text="Cocher si le produit est intact et revendable"
+    )
+    utilisateur = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True
+    )
+    date = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-date"]
+
+    def __str__(self):
+        return f"Retour {self.quantite} x {self.ligne.medicament}"

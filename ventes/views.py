@@ -16,7 +16,7 @@ from reportlab.lib.pagesizes import A5
 from reportlab.pdfgen import canvas
 from medicaments.models import Medicament
 from stock.models import LotStock, MouvementStock
-from .models import LigneVente, Vente
+from .models import LigneVente, Vente, RetourVente
 
 
 class StockInsuffisant(Exception):
@@ -211,3 +211,47 @@ def recu_pdf(request, pk):
     p.showPage()
     p.save()
     return response
+
+@roles_requis(CAISSIER, PHARMACIEN)
+def retour(request, pk):
+    """Retour d'une ligne de vente : opération compensatoire, jamais de suppression."""
+    ligne = get_object_or_404(
+        LigneVente.objects.select_related("vente", "medicament", "lot"), pk=pk
+    )
+    deja = ligne.retours.aggregate(t=Coalesce(Sum("quantite"), 0))["t"]
+    retournable = ligne.quantite - deja
+
+    if request.method == "POST":
+        try:
+            qte = int(request.POST.get("quantite", "0"))
+        except ValueError:
+            qte = 0
+        motif = request.POST.get("motif", "").strip()
+        remise = request.POST.get("remis_en_stock") == "on"
+
+        if qte <= 0 or qte > retournable:
+            messages.error(request, f"Quantité invalide (maximum retournable : {retournable}).")
+        elif not motif:
+            messages.error(request, "Le motif du retour est obligatoire.")
+        else:
+            user = request.user if request.user.is_authenticated else None
+            with transaction.atomic():
+                lot = LotStock.objects.select_for_update().get(pk=ligne.lot_id)
+                RetourVente.objects.create(
+                    ligne=ligne, quantite=qte, motif=motif,
+                    remis_en_stock=remise, utilisateur=user,
+                )
+                if remise:
+                    lot.quantite += qte
+                    lot.save(update_fields=["quantite"])
+                    MouvementStock.objects.create(
+                        lot=lot, type="retour", quantite=qte,
+                        motif=f"Retour vente {ligne.vente.numero} : {motif}",
+                        utilisateur=user,
+                    )
+            messages.success(request, "Retour enregistré.")
+            return redirect("vente_detail", pk=ligne.vente_id)
+
+    return render(request, "ventes/retour.html", {
+        "ligne": ligne, "retournable": retournable,
+    })

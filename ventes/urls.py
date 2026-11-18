@@ -9,4 +9,5 @@ urlpatterns = [
     path("historique/", views.liste_ventes, name="vente_liste"),
     path("<int:pk>/", views.vente_detail, name="vente_detail"),
     path("<int:pk>/pdf/", views.recu_pdf, name="vente_pdf"),
+    path("ligne/<int:pk>/retour/", views.retour, name="vente_retour"),
 ]
