@@ -14,13 +14,19 @@ Application web de gestion de pharmacie développée avec Django.
 - Ventes : panier, FEFO automatique, transaction atomique, prix figé, refus si stock insuffisant ou lot périmé/bloqué
 - Retours de vente : motif obligatoire, remise en stock conditionnelle, vente d'origine conservée
 - Reçu de vente PDF (ReportLab)
+- Rapports PDF : stock, produits périmés ou proches de la péremption, ventes
 - Tableau de bord
 - Tests automatisés (19) et données fictives (`seed`)
 
 ## Limites actuelles (non réalisées)
 - Gestion des clients
-- Rapports PDF (stock, ventes, achats), inventaire physique, journal d'audit
+- Inventaire physique, journal d'audit dédié (les mouvements de stock conservent déjà l'auteur et la date)
+- Rapport PDF des achats
 - Sauvegarde automatique de la base
+
+## Documentation
+- `docs/guide_utilisation.md` : guide d'utilisation
+- `docs/classes.png` : diagramme de classes généré depuis les modèles
 
 ## Installation
 ```bash

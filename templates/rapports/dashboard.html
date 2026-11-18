@@ -2,6 +2,11 @@
 {% block title %}Tableau de bord{% endblock %}
 {% block content %}
 <h2 class="mb-3">Tableau de bord</h2>
+<div class="d-flex gap-2 mb-3">
+  <a href="{% url 'rapport_stock' %}" target="_blank" class="btn btn-outline-danger btn-sm">PDF Stock</a>
+  <a href="{% url 'rapport_peremption' %}" target="_blank" class="btn btn-outline-danger btn-sm">PDF Péremptions</a>
+  <a href="{% url 'rapport_ventes' %}" target="_blank" class="btn btn-outline-danger btn-sm">PDF Ventes</a>
+</div>
 
 <div class="row g-3 mb-4">
   <div class="col-md-3"><div class="card card-body text-center border-success">
