@@ -8,6 +8,7 @@ Application web de gestion de pharmacie développée avec Django.
 - Médicaments : CRUD, photo, recherche, filtre par catégorie, pagination, archivage
 - Catégories : ajout, liste, modification
 - Fournisseurs : CRUD, recherche, désactivation
+- Clients : CRUD, recherche, historique des ventes, client facultatif (vente comptoir possible)
 - Achats : commandes (brouillon, commandée, partiellement réceptionnée, entièrement réceptionnée, annulée), réception partielle par lot, stock modifié uniquement à la réception
 - Stock : lots, péremptions, mouvements tracés, alertes (rupture, stock faible, péremption proche, lots périmés)
 - Réception de marchandise directe (transaction atomique)
@@ -19,7 +20,6 @@ Application web de gestion de pharmacie développée avec Django.
 - Tests automatisés (19) et données fictives (`seed`)
 
 ## Limites actuelles (non réalisées)
-- Gestion des clients
 - Inventaire physique, journal d'audit dédié (les mouvements de stock conservent déjà l'auteur et la date)
 - Rapport PDF des achats
 - Sauvegarde automatique de la base
