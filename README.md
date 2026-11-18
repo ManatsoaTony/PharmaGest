@@ -14,6 +14,7 @@ Application web de gestion de pharmacie développée avec Django.
 - Reçu de vente PDF (ReportLab)
 - Tableau de bord
 - Tests automatisés (12) et données fictives (`seed`)
+- Retours de vente : motif obligatoire, remise en stock conditionnelle, vente d'origine conservée
 
 ## Limites actuelles (non réalisées)
 - Module Achats complet (commandes, statuts) : seule la réception directe existe
