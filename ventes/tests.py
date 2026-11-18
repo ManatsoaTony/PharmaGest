@@ -101,3 +101,22 @@ class VenteTests(TestCase):
         r = self.client.get(reverse("caisse"))
         self.assertEqual(r.status_code, 302)
         self.assertIn("/login/", r.url)
+
+    def test_retour_remet_en_stock_et_garde_la_vente(self):
+        lot = self._lot(20)
+        self._vendre(3)
+        ligne = Vente.objects.first().lignes.first()
+        self.client.post(reverse("vente_retour", args=[ligne.pk]),
+                         {"quantite": 2, "motif": "erreur", "remis_en_stock": "on"})
+        lot.refresh_from_db()
+        self.assertEqual(lot.quantite, 19)
+        self.assertEqual(Vente.objects.count(), 1)
+
+    def test_retour_superieur_a_la_vente_refuse(self):
+        lot = self._lot(20)
+        self._vendre(3)
+        ligne = Vente.objects.first().lignes.first()
+        self.client.post(reverse("vente_retour", args=[ligne.pk]),
+                         {"quantite": 5, "motif": "erreur", "remis_en_stock": "on"})
+        lot.refresh_from_db()
+        self.assertEqual(lot.quantite, 17)
