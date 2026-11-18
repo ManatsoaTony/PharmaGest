@@ -12,6 +12,10 @@ class Vente(models.Model):
     utilisateur = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True
     )
+    client = models.ForeignKey(
+        "clients.Client", on_delete=models.SET_NULL,
+        null=True, blank=True, related_name="ventes"
+    )
     mode_paiement = models.CharField(max_length=20, choices=MODES, default="especes")
     total = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     date = models.DateTimeField(auto_now_add=True)
@@ -40,6 +44,7 @@ class LigneVente(models.Model):
     @property
     def sous_total(self):
         return self.quantite * self.prix_unitaire
+
 
 class RetourVente(models.Model):
     ligne = models.ForeignKey(

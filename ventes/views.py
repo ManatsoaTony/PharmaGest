@@ -14,6 +14,7 @@ from django.http import HttpResponse
 from django.utils import timezone
 from reportlab.lib.pagesizes import A5
 from reportlab.pdfgen import canvas
+from clients.models import Client
 from medicaments.models import Medicament
 from stock.models import LotStock, MouvementStock
 from .models import LigneVente, Vente, RetourVente
@@ -56,6 +57,7 @@ def caisse(request):
     return render(request, "ventes/caisse.html", {
         "lignes": lignes, "total": total,
         "medicaments": medicaments, "modes": Vente.MODES,
+        "clients": Client.objects.filter(actif=True),
     })
 
 
@@ -106,7 +108,8 @@ def valider(request):
 
     try:
         with transaction.atomic():
-            vente = Vente.objects.create(utilisateur=user, mode_paiement=mode)
+            client = Client.objects.filter(pk=request.POST.get("client") or None, actif=True).first()
+            vente = Vente.objects.create(utilisateur=user, mode_paiement=mode, client=client)
             total = Decimal("0")
             for med_id, qte in panier.items():
                 med = Medicament.objects.get(pk=med_id)

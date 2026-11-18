@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between mb-3">
+  <h2>Clients</h2>
+  <a href="{% url 'client_ajouter' %}" class="btn btn-success">+ Ajouter</a>
+</div>
+<form method="get" class="row g-2 mb-3">
+  <div class="col-md-9"><input type="text" name="q" value="{{ q }}" class="form-control" placeholder="Nom ou téléphone"></div>
+  <div class="col-md-3"><button class="btn btn-outline-success w-100">Rechercher</button></div>
+</form>
+<table class="table table-striped bg-white align-middle">
+  <thead><tr><th>Nom</th><th>Téléphone</th><th>Statut</th><th></th></tr></thead>
+  <tbody>
+  {% for c in clients %}
+    <tr>
+      <td>{{ c.nom }}</td>
+      <td>{{ c.telephone|default:"—" }}</td>
+      <td>{% if c.actif %}<span class="badge bg-success">Actif</span>{% else %}<span class="badge bg-secondary">Inactif</span>{% endif %}</td>
+      <td class="d-flex gap-1">
+        <a href="{% url 'client_detail' c.pk %}" class="btn btn-sm btn-outline-primary">Historique</a>
+        <a href="{% url 'client_modifier' c.pk %}" class="btn btn-sm btn-primary">Modifier</a>
+      </td>
+    </tr>
+  {% empty %}
+    <tr><td colspan="4" class="text-center">Aucun client.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

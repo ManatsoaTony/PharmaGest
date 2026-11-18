@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between mb-3">
+  <h2>{{ object.nom }}</h2>
+  <a href="{% url 'client_liste' %}" class="btn btn-outline-secondary">← Clients</a>
+</div>
+<p>Téléphone : {{ object.telephone|default:"—" }} — Adresse : {{ object.adresse|default:"—" }}</p>
+<h5>Historique des ventes</h5>
+<table class="table table-striped bg-white">
+  <thead><tr><th>N°</th><th>Date</th><th>Total</th></tr></thead>
+  <tbody>
+  {% for v in ventes %}
+    <tr>
+      <td><a href="{% url 'vente_detail' v.pk %}">{{ v.numero }}</a></td>
+      <td>{{ v.date|date:"d/m/Y H:i" }}</td>
+      <td>{{ v.total }} Ar</td>
+    </tr>
+  {% empty %}
+    <tr><td colspan="3" class="text-center">Aucune vente.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
