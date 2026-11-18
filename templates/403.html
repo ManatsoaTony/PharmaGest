@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="alert alert-danger">
+  <h4>Accès refusé</h4>
+  Votre profil n'est pas autorisé à effectuer cette action.
+</div>
+<a href="{% url 'dashboard' %}" class="btn btn-secondary">Retour</a>
+{% endblock %}

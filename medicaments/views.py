@@ -1,3 +1,5 @@
+from django.utils.decorators import method_decorator
+from utilisateurs.roles import GESTIONNAIRE, PHARMACIEN, roles_requis
 from django.contrib import messages
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect
@@ -38,6 +40,7 @@ class MedicamentDetailView(DetailView):
     template_name = "medicaments/detail.html"
 
 
+@method_decorator(roles_requis(PHARMACIEN, GESTIONNAIRE), name="dispatch")
 class MedicamentCreateView(CreateView):
     model = Medicament
     form_class = MedicamentForm
@@ -49,6 +52,7 @@ class MedicamentCreateView(CreateView):
         return super().form_valid(form)
 
 
+@method_decorator(roles_requis(PHARMACIEN, GESTIONNAIRE), name="dispatch")
 class MedicamentUpdateView(UpdateView):
     model = Medicament
     form_class = MedicamentForm
@@ -61,6 +65,7 @@ class MedicamentUpdateView(UpdateView):
 
 
 @require_POST
+@roles_requis(PHARMACIEN, GESTIONNAIRE)
 def medicament_archiver(request, pk):
     med = get_object_or_404(Medicament, pk=pk)
     med.actif = not med.actif
@@ -74,6 +79,7 @@ class CategorieListView(ListView):
     context_object_name = "categories"
 
 
+@method_decorator(roles_requis(PHARMACIEN, GESTIONNAIRE), name="dispatch")
 class CategorieCreateView(CreateView):
     model = Categorie
     form_class = CategorieForm
@@ -85,6 +91,7 @@ class CategorieCreateView(CreateView):
         return super().form_valid(form)
 
 
+@method_decorator(roles_requis(PHARMACIEN, GESTIONNAIRE), name="dispatch")
 class CategorieUpdateView(UpdateView):
     model = Categorie
     form_class = CategorieForm

@@ -1,3 +1,4 @@
+from utilisateurs.roles import GESTIONNAIRE, PHARMACIEN, roles_requis
 from django.contrib import messages
 from django.db import transaction
 from django.db.models import Q, Sum
@@ -43,6 +44,7 @@ def liste_lots(request):
     return render(request, "stock/lots.html", {"lots": lots})
 
 
+@roles_requis(GESTIONNAIRE, PHARMACIEN)
 def reception(request):
     """Réception de marchandise : crée le lot ET le mouvement dans une transaction."""
     if request.method == "POST":

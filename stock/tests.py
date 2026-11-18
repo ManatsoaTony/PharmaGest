@@ -10,7 +10,7 @@ from stock.models import LotStock, MouvementStock
 
 class ReceptionTests(TestCase):
     def setUp(self):
-        get_user_model().objects.create_user("gest", password="pass12345")
+        get_user_model().objects.create_superuser("gest", password="pass12345")
         self.client.login(username="gest", password="pass12345")
         cat = Categorie.objects.create(nom="Vitamines")
         self.med = Medicament.objects.create(

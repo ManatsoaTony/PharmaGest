@@ -1,6 +1,8 @@
 from datetime import date
 from decimal import Decimal
 
+from utilisateurs.roles import CAISSIER, PHARMACIEN, roles_requis
+
 from django.contrib import messages
 from django.db import transaction
 from django.db.models import Q, Sum
@@ -33,6 +35,7 @@ def _dispo(med):
     return _lots_vendables(med).aggregate(t=Coalesce(Sum("quantite"), 0))["t"]
 
 
+@roles_requis(CAISSIER, PHARMACIEN)
 def caisse(request):
     panier = request.session.get("panier", {})
     lignes, total = [], Decimal("0")
@@ -56,6 +59,7 @@ def caisse(request):
     })
 
 
+@roles_requis(CAISSIER, PHARMACIEN)
 @require_POST
 def panier_ajouter(request):
     med = get_object_or_404(Medicament, pk=request.POST.get("medicament"), actif=True)
@@ -78,6 +82,7 @@ def panier_ajouter(request):
     return redirect("caisse")
 
 
+@roles_requis(CAISSIER, PHARMACIEN)
 @require_POST
 def panier_retirer(request, pk):
     panier = request.session.get("panier", {})
@@ -86,6 +91,7 @@ def panier_retirer(request, pk):
     return redirect("caisse")
 
 
+@roles_requis(CAISSIER, PHARMACIEN)
 @require_POST
 def valider(request):
     panier = request.session.get("panier")
@@ -145,6 +151,7 @@ def vente_detail(request, pk):
     )
     return render(request, "ventes/detail.html", {"vente": vente})
 
+@roles_requis(CAISSIER, PHARMACIEN)
 def recu_pdf(request, pk):
     vente = get_object_or_404(
         Vente.objects.prefetch_related("lignes__medicament", "lignes__lot"), pk=pk

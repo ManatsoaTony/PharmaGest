@@ -12,7 +12,7 @@ from ventes.models import Vente
 
 class VenteTests(TestCase):
     def setUp(self):
-        self.user = get_user_model().objects.create_user("caissier", password="pass12345")
+        self.user = get_user_model().objects.create_superuser("caissier", password="pass12345")
         self.client.login(username="caissier", password="pass12345")
         cat = Categorie.objects.create(nom="Antalgiques")
         self.med = Medicament.objects.create(
