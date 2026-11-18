@@ -4,6 +4,7 @@ Application web de gestion de pharmacie développée avec Django.
 
 ## Fonctionnalités réalisées
 - Authentification, toutes les pages protégées
+- Rôles : Pharmacien, Caissier, Gestionnaire de stock (comptes de démo via `python manage.py roles`, mot de passe `Pharma2026!`)
 - Médicaments : CRUD, photo, recherche, filtre par catégorie, pagination, archivage
 - Catégories : ajout, liste, modification
 - Fournisseurs : CRUD, recherche, désactivation
@@ -12,10 +13,9 @@ Application web de gestion de pharmacie développée avec Django.
 - Ventes : panier, FEFO automatique, transaction atomique, prix figé, refus si stock insuffisant ou lot périmé/bloqué
 - Reçu de vente PDF (ReportLab)
 - Tableau de bord
-- Tests automatisés et données fictives (`seed`)
+- Tests automatisés (12) et données fictives (`seed`)
 
 ## Limites actuelles (non réalisées)
-- Rôles et permissions détaillés par profil
 - Module Achats complet (commandes, statuts) : seule la réception directe existe
 - Retours et annulations de vente
 - Gestion des clients
@@ -32,6 +32,7 @@ pip install -r requirements.txt
 python manage.py migrate
 python manage.py createsuperuser
 python manage.py seed
+python manage.py roles
 python manage.py runserver
 ```
 
