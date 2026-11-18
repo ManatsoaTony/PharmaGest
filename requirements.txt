@@ -1,3 +1,5 @@
 Django>=6.1
 Pillow
 reportlab
+django-extensions
+pydotplus
