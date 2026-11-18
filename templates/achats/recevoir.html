@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Réception : {{ ligne.medicament }}</h2>
+<p>Commande {{ c.numero }} — commandé : {{ ligne.quantite }}, déjà reçu : {{ ligne.quantite_recue }},
+   reste : <b>{{ ligne.restant }}</b></p>
+<form method="post" class="card card-body">
+  {% csrf_token %}
+  <label class="form-label">Quantité reçue</label>
+  <input type="number" name="quantite" min="1" max="{{ ligne.restant }}" value="{{ ligne.restant }}" class="form-control mb-3" required>
+  <label class="form-label">Numéro de lot</label>
+  <input type="text" name="numero_lot" class="form-control mb-3" required>
+  <label class="form-label">Date de péremption</label>
+  <input type="date" name="date_peremption" class="form-control mb-3" required>
+  <button class="btn btn-success">Valider la réception</button>
+  <a href="{% url 'achat_detail' c.pk %}" class="btn btn-link">Annuler</a>
+</form>
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Nouvelle commande d'achat</h2>
+<form method="post" class="card card-body">
+  {% csrf_token %}
+  <label class="form-label">Fournisseur</label>
+  <select name="fournisseur" class="form-select mb-3" required>
+    {% for f in fournisseurs %}<option value="{{ f.pk }}">{{ f.nom }}</option>{% endfor %}
+  </select>
+  <button class="btn btn-success">Créer le brouillon</button>
+  <a href="{% url 'achat_liste' %}" class="btn btn-link">Annuler</a>
+</form>
+{% endblock %}

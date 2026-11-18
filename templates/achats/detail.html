@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between mb-3">
+  <h2>Commande {{ c.numero }}</h2>
+  <a href="{% url 'achat_liste' %}" class="btn btn-outline-secondary">← Commandes</a>
+</div>
+<p>Fournisseur : <b>{{ c.fournisseur }}</b> — Statut : <span class="badge bg-info text-dark">{{ c.get_statut_display }}</span></p>
+
+<table class="table bg-white align-middle">
+  <thead><tr><th>Médicament</th><th>Commandé</th><th>Prix achat</th><th>Sous-total</th><th>Reçu</th><th></th></tr></thead>
+  <tbody>
+  {% for l in c.lignes.all %}
+    <tr>
+      <td>{{ l.medicament }}</td>
+      <td>{{ l.quantite }}</td>
+      <td>{{ l.prix_achat }} Ar</td>
+      <td>{{ l.sous_total }} Ar</td>
+      <td>{{ l.quantite_recue }}</td>
+      <td class="d-flex gap-1">
+        {% if c.statut == "brouillon" %}
+          <form method="post" action="{% url 'achat_ligne_supprimer' l.pk %}">{% csrf_token %}
+            <button class="btn btn-sm btn-outline-danger">Retirer</button></form>
+        {% elif c.statut == "commandee" or c.statut == "partielle" %}
+          {% if l.restant > 0 %}
+            <a href="{% url 'achat_recevoir' l.pk %}" class="btn btn-sm btn-success">Réceptionner ({{ l.restant }})</a>
+          {% endif %}
+        {% endif %}
+      </td>
+    </tr>
+  {% empty %}
+    <tr><td colspan="6" class="text-center">Aucune ligne.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+<h4 class="text-end">Total : {{ c.total }} Ar</h4>
+
+{% if c.statut == "brouillon" %}
+<form method="post" action="{% url 'achat_ligne_ajouter' c.pk %}" class="card card-body mb-3">
+  {% csrf_token %}
+  <div class="row g-2">
+    <div class="col-md-5">
+      <select name="medicament" class="form-select" required>
+        {% for m in medicaments %}<option value="{{ m.pk }}">{{ m }}</option>{% endfor %}
+      </select>
+    </div>
+    <div class="col-md-2"><input type="number" name="quantite" min="1" value="10" class="form-control" required></div>
+    <div class="col-md-3"><input type="number" step="0.01" min="0" name="prix_achat" class="form-control" placeholder="Prix achat (défaut)"></div>
+    <div class="col-md-2"><button class="btn btn-outline-success w-100">Ajouter</button></div>
+  </div>
+</form>
+<div class="d-flex gap-2">
+  <form method="post" action="{% url 'achat_valider' c.pk %}" onsubmit="return confirm('Valider la commande ?');">
+    {% csrf_token %}<button class="btn btn-primary">Valider la commande</button></form>
+  <form method="post" action="{% url 'achat_annuler' c.pk %}" onsubmit="return confirm('Annuler ?');">
+    {% csrf_token %}<button class="btn btn-outline-danger">Annuler</button></form>
+</div>
+{% elif c.statut == "commandee" %}
+<form method="post" action="{% url 'achat_annuler' c.pk %}" onsubmit="return confirm('Annuler ?');">
+  {% csrf_token %}<button class="btn btn-outline-danger">Annuler la commande</button></form>
+{% endif %}
+{% endblock %}
