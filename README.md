@@ -8,17 +8,16 @@ Application web de gestion de pharmacie développée avec Django.
 - Médicaments : CRUD, photo, recherche, filtre par catégorie, pagination, archivage
 - Catégories : ajout, liste, modification
 - Fournisseurs : CRUD, recherche, désactivation
+- Achats : commandes (brouillon, commandée, partiellement réceptionnée, entièrement réceptionnée, annulée), réception partielle par lot, stock modifié uniquement à la réception
 - Stock : lots, péremptions, mouvements tracés, alertes (rupture, stock faible, péremption proche, lots périmés)
-- Réception de marchandise (transaction atomique)
+- Réception de marchandise directe (transaction atomique)
 - Ventes : panier, FEFO automatique, transaction atomique, prix figé, refus si stock insuffisant ou lot périmé/bloqué
+- Retours de vente : motif obligatoire, remise en stock conditionnelle, vente d'origine conservée
 - Reçu de vente PDF (ReportLab)
 - Tableau de bord
-- Tests automatisés (12) et données fictives (`seed`)
-- Retours de vente : motif obligatoire, remise en stock conditionnelle, vente d'origine conservée
+- Tests automatisés (19) et données fictives (`seed`)
 
 ## Limites actuelles (non réalisées)
-- Module Achats complet (commandes, statuts) : seule la réception directe existe
-- Retours et annulations de vente
 - Gestion des clients
 - Rapports PDF (stock, ventes, achats), inventaire physique, journal d'audit
 - Sauvegarde automatique de la base
